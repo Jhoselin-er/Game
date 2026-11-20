@@ -1,3 +1,4 @@
+-- Game Entities
 local Story = require("tinta.love")
 local json = require("libraries/json")
 local player = {}
