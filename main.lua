@@ -19,7 +19,7 @@ function love.load()
 
     anim8 = require 'libraries/anim8'
     love.graphics.setDefaultFilter("nearest", "nearest")
-
+-- comment
     sti = require 'libraries/sti'
     gameMap = sti('maps/testmap.lua')
 
