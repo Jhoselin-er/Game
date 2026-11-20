@@ -23,7 +23,7 @@ function love.load()
     sti = require 'libraries/sti'
     gameMap = sti('maps/testmap.lua')
 
-    player = {} ---player
+    player = {} ---player----
     player.x = 400
     player.y = 200
     player.speed = 3
