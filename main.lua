@@ -12,7 +12,7 @@ local dialogue = {
     rawStory = nil,
     currentKnot = nil
 }
-
+--hi
 function love.load()
     camera = require 'libraries/camera'
     cam = camera()
