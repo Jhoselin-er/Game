@@ -14,6 +14,7 @@ local dialogue = {
 }
 --hi
 function love.load()
+    print("I AM RUNNING MY NEW CODE")
     camera = require 'libraries/camera'
     cam = camera()
 
@@ -52,7 +53,7 @@ function love.load()
     -------change for states 1--------
     resetGame()
     gameState = "mainMenu"
-
+    
 end
 ---------changes for states- make function resetGame()--------
 function resetGame()
