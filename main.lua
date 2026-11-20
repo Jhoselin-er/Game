@@ -49,9 +49,31 @@ function love.load()
     local storyDefinition = import("dialogue/suspect")
     story = Story(storyDefinition)
 
-
+    -------change for states 1--------
+    resetGame()
+    gameState = "mainMenu"
 
 end
+---------changes for states- make function resetGame()--------
+function resetGame()
+    --player position
+    player.x = 400
+    player.y = 200
+
+    -- Reset NPC position
+    npc.x = 400
+    npc.y = 200
+
+    -- Reset dialogue state
+    dialogue.active = false
+    dialogue.text = ""
+    dialogue.choices = {}
+
+    -- Reset game state to main menu
+    gameState = "mainMenu"
+end
+
+
 
 function love.update(dt)
     if dialogue.active then 
@@ -161,7 +183,13 @@ function chooseOption(index)
 end
 
 function love.keypressed(key)
-
+    -----changes for states- make function resetGame()--------
+    if key == "return" and gameState == "mainMenu" then
+        
+        gameState = "play"
+        return
+    end
+    ----------------------------------------------------------
     if dialogue.active then
 
         local numkey = tonumber(key)
@@ -188,82 +216,93 @@ function love.keypressed(key)
             (player.y - npc.y)^2
         )
 
-        if dist < 50 then
+        if dist < 150 then
             startDialogue()
         end
     end
 end
 
 function love.draw()
-    cam:attach()
-        gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
-        love.graphics.draw(player.spriteSheet, player.x, player.y, 0, 0.3, 0.3)
-        npc.anim:draw(npc.spriteSheet, npc.x, npc.y, 0, 6, 6, 6, 9)
-        player.anim:draw(player.spriteSheet, player.x, player.y, nil, 6, nil, 6, 9)
-    cam:detach()
+    --------change for states 2--------
+    if gameState == "mainMenu" then
+        local w = love.graphics.getWidth()
+        local h = love.graphics.getHeight()
+        love.graphics.print("Press Enter to Start", w/2, h/2)
+    elseif gameState == "play" then
+        ---------------------------------------------
+        cam:attach()
+            gameMap:drawLayer(gameMap.layers["Tile Layer 1"])
+            love.graphics.draw(player.spriteSheet, player.x, player.y, 0, 0.3, 0.3)
+            npc.anim:draw(npc.spriteSheet, npc.x, npc.y, 0, 6, 6, 6, 9)
+            player.anim:draw(player.spriteSheet, player.x, player.y, nil, 6, nil, 6, 9)
+        cam:detach()
 
-    local dist = math.sqrt((player.x - npc.x)^2 + (player.y - npc.y)^2)
-    if dist < 50 and not dialogue.active then 
+        local dist = math.sqrt((player.x - npc.x)^2 + (player.y - npc.y)^2)
+        if dist < 50 and not dialogue.active then 
+            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.print("Press [E] to Interrogate", 10, 10)
+        end
+
+    if dialogue.active then
+
+        local screenW = love.graphics.getWidth()
+        local screenH = love.graphics.getHeight()
+
+        local boxW = screenW - 40
+        local boxH = math.min(260, screenH - 40)
+
+        local boxX = 20
+        local boxY = screenH - boxH - 20
+
+        -- Background
+        love.graphics.setColor(0.1, 0.1, 0.1, 0.95)
+        love.graphics.rectangle(
+            "fill",
+            boxX, boxY,
+            boxW, boxH,
+            8, 8
+        )
+
+        -- Border
+        love.graphics.setColor(0.8, 0.7, 0.5, 1)
+        love.graphics.rectangle(
+            "line",
+            boxX, boxY,
+            boxW, boxH,
+            8, 8
+        )
+
+        -- Dialogue text
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.print("Press [E] to Interrogate", 10, 10)
-    end
-
-   if dialogue.active then
-
-    local screenW = love.graphics.getWidth()
-    local screenH = love.graphics.getHeight()
-
-    local boxW = screenW - 40
-    local boxH = math.min(260, screenH - 40)
-
-    local boxX = 20
-    local boxY = screenH - boxH - 20
-
-    -- Background
-    love.graphics.setColor(0.1, 0.1, 0.1, 0.95)
-    love.graphics.rectangle(
-        "fill",
-        boxX, boxY,
-        boxW, boxH,
-        8, 8
-    )
-
-    -- Border
-    love.graphics.setColor(0.8, 0.7, 0.5, 1)
-    love.graphics.rectangle(
-        "line",
-        boxX, boxY,
-        boxW, boxH,
-        8, 8
-    )
-
-    -- Dialogue text
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.printf(
-        dialogue.text,
-        boxX + 20,
-        boxY + 20,
-        boxW - 40,
-        "left"
-    )
-
-    -- Choices
-    love.graphics.setColor(0.9, 0.8, 0.3, 1)
-
-    for i, choice in ipairs(dialogue.choices) do
-
-        local choiceY = boxY + 120 + (i - 1) * 30
-
         love.graphics.printf(
-            "[" .. i .. "] " .. choice.text,
+            dialogue.text,
             boxX + 20,
-            choiceY,
+            boxY + 20,
             boxW - 40,
             "left"
         )
-    end
 
-    love.graphics.setColor(1, 1, 1, 1)
+        -- Choices
+        love.graphics.setColor(0.9, 0.8, 0.3, 1)
 
+        for i, choice in ipairs(dialogue.choices) do
+
+            local choiceY = boxY + 120 + (i - 1) * 30
+
+            love.graphics.printf(
+                "[" .. i .. "] " .. choice.text,
+                boxX + 20,
+                choiceY,
+                boxW - 40,
+                "left"
+            )
+        end
+
+        love.graphics.setColor(1, 1, 1, 1)
+
+        end
+        -----change for states 3--------
+    elseif gameState == "gameOver" then
+        love.graphics.print("Game Over! Press Enter to Restart", 400, 200)
     end
 end
